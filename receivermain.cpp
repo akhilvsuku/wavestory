@@ -3,8 +3,8 @@
 
 namespace fs = std::filesystem;
 
-std::string trav_print() {
-	std::string path = "."; // current directory
+std::string trav_print(std::string str_path) {
+	std::string path = str_path; // current directory
 	std::string str_out = ""; // current directory
 
     try {
@@ -110,12 +110,23 @@ void receivermain::delete_account(const httplib::Request& req, httplib::Response
 void receivermain::save_doc(const httplib::Request& req, httplib::Response& res)
 { 
     std::string str_doc = "";
+    std::string str_path = "";
     if (req.has_param("doc")) {
         str_doc = req.get_param_value("doc");
     }
 	
-	std::string str_res = trav_print();
-    res.set_content(str_res.c_str(), "text/plain");
+	
+    if (req.has_param("find")) {
+        str_path = req.get_param_value("find");
+    }
+	
+	if(str_path != "") {
+		std::string str_res = trav_print(str_path);
+		res.set_content(str_res.c_str(), "text/plain");
+	}
+	else { 
+		res.set_content("No path", "text/plain");
+    }
 }
 
 
