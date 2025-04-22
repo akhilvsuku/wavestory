@@ -14,7 +14,7 @@ std::string trav_print() {
             }
         }
     } catch (const fs::filesystem_error& e) {
-        str_out += "Filesystem error: " + e.what();
+        str_out += "Filesystem error: " + std::string(e.what());
     }
 }
 
