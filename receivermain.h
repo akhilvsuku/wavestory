@@ -9,7 +9,7 @@ class receivermain
    // httplib::SSLServer svr;
 protected:
 
-	void process_hi(const httplib::Request& req, httplib::Response& res);
+	void process_version(const httplib::Request& req, httplib::Response& res);
 	void singin_signup(const httplib::Request& req, httplib::Response& res);
 	void fetch_search(const httplib::Request& req, httplib::Response& res);
 	void fetch_search_update(const httplib::Request& req, httplib::Response& res);

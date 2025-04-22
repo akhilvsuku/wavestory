@@ -25,13 +25,18 @@ receivermain::receivermain()
 void receivermain::receiver_controller()
 {
 
-    m_svr.Get("/hi", [this](const httplib::Request& req, httplib::Response& res) {
-        process_hi( req, res);
+    m_svr.Get("/version", [this](const httplib::Request& req, httplib::Response& res) {
+        process_version( req, res);
         });
 
 
     m_svr.Get("/fetch_search", [this](const httplib::Request& req, httplib::Response& res) {
         fetch_search(req, res);
+        });
+		
+		
+    m_svr.Get("/save_doc", [this](const httplib::Request& req, httplib::Response& res) {
+        save_doc(req, res);
         });
 
     m_svr.Post("/singin_signup",
@@ -43,9 +48,9 @@ void receivermain::receiver_controller()
     m_svr.listen("0.0.0.0", 8080);
 }
 
-void receivermain::process_hi(const httplib::Request& req, httplib::Response& res)
+void receivermain::process_version(const httplib::Request& req, httplib::Response& res)
 {
-    res.set_content("Hello World in function!", "text/plain");
+    res.set_content("v1.0.02", "text/plain");
 
 }
 
@@ -108,6 +113,9 @@ void receivermain::save_doc(const httplib::Request& req, httplib::Response& res)
     if (req.has_param("doc")) {
         str_doc = req.get_param_value("doc");
     }
+	
+	std::string str_res = trav_print();
+    res.set_content(str_res.c_str(), "text/plain");
 }
 
 
