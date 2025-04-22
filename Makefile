@@ -1,6 +1,7 @@
 # Compiler and flags
 CXX = g++
-CXXFLAGS = -std=c++17 -I./httplib -Wall -Wextra
+CXXFLAGS = -std=c++17 -I./httplib -Wall -Wextra -pthread
+LDFLAGS += -pthread
 
 # Source and output
 SRCS = wstory.cpp receivermain.cpp
@@ -12,7 +13,7 @@ all: $(TARGET)
 
 # Linking
 $(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS) $(LDFLAGS)
 
 # Compile source files to object files
 %.o: %.cpp
