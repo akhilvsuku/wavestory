@@ -17,6 +17,8 @@ protected:
 	void manage_payment(const httplib::Request& req, httplib::Response& res);
 	void manage_booking(const httplib::Request& req, httplib::Response& res);
 	void delete_account(const httplib::Request& req, httplib::Response& res);
+	void save_doc(const httplib::Request& req, httplib::Response& res);
+	void load_doc(const httplib::Request& req, httplib::Response& res);
 
 
 public:

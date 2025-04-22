@@ -1,4 +1,22 @@
 #include "receivermain.h"
+#include <filesystem>
+
+namespace fs = std::filesystem;
+
+std::string trav_print() {
+	std::string path = "."; // current directory
+	std::string str_out = ""; // current directory
+
+    try {
+        for (const auto& entry : fs::directory_iterator(path)) {
+            if (fs::is_directory(entry.status())) {
+                str_out += " -> " + entry.path().string();
+            }
+        }
+    } catch (const fs::filesystem_error& e) {
+        str_out += "Filesystem error: " + e.what();
+    }
+}
 
 receivermain::receivermain()
 {
@@ -82,6 +100,21 @@ void receivermain::manage_booking(const httplib::Request& req, httplib::Response
 void receivermain::delete_account(const httplib::Request& req, httplib::Response& res)
 {
 }
+
+
+void receivermain::save_doc(const httplib::Request& req, httplib::Response& res)
+{ 
+    std::string str_doc = "";
+    if (req.has_param("doc")) {
+        str_doc = req.get_param_value("doc");
+    }
+}
+
+
+void receivermain::load_doc(const httplib::Request& req, httplib::Response& res)
+{
+}
+
 
 receivermain::~receivermain()
 {
