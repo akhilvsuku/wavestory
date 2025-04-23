@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <limits.h>
 #include <stdlib.h>
+#include "Logger.h" 
 
 namespace fs = std::filesystem;
 
@@ -12,7 +13,7 @@ receivermain::receivermain()
 
 void receivermain::receiver_controller()
 {
-
+    Logger::getInstance()->log(Logger::Level::INFO,"receivermain::receiver_controller");
     m_svr.Get("/version", [this](const httplib::Request& req, httplib::Response& res) {
         process_version( req, res);
         });
@@ -38,12 +39,13 @@ void receivermain::receiver_controller()
 
 void receivermain::process_version(const httplib::Request& req, httplib::Response& res)
 {
+    Logger::getInstance()->log(Logger::Level::INFO,"receivermain::process_version");
     res.set_content("v1.0.02", "text/plain");
-
 }
 
 void receivermain::singin_signup(const httplib::Request& req, httplib::Response& res)
 {
+    Logger::getInstance()->log(Logger::Level::INFO,"receivermain::singin_signup");
     std::string str_uname = "";
     std::string str_pwrd = "";
     if (req.has_param("username")) {
@@ -60,6 +62,7 @@ void receivermain::singin_signup(const httplib::Request& req, httplib::Response&
 
 void receivermain::fetch_search(const httplib::Request& req, httplib::Response& res)
 {
+    Logger::getInstance()->log(Logger::Level::INFO,"receivermain::fetch_search");
     std::string str_uname = "";
     std::string str_pwrd = "";
     if (req.has_param("username")) {
@@ -76,27 +79,33 @@ void receivermain::fetch_search(const httplib::Request& req, httplib::Response& 
 
 void receivermain::fetch_search_update(const httplib::Request& req, httplib::Response& res)
 {
+    Logger::getInstance()->log(Logger::Level::INFO,"receivermain::fetch_search_update");
 }
 
 void receivermain::manage_account(const httplib::Request& req, httplib::Response& res)
 {
+    Logger::getInstance()->log(Logger::Level::INFO,"receivermain::manage_account");
 }
 
 void receivermain::manage_payment(const httplib::Request& req, httplib::Response& res)
 {
+    Logger::getInstance()->log(Logger::Level::INFO,"receivermain::manage_payment");
 }
 
 void receivermain::manage_booking(const httplib::Request& req, httplib::Response& res)
 {
+    Logger::getInstance()->log(Logger::Level::INFO,"receivermain::manage_booking");
 }
 
 void receivermain::delete_account(const httplib::Request& req, httplib::Response& res)
 {
+    Logger::getInstance()->log(Logger::Level::INFO,"receivermain::delete_account");
 }
 
 
 void receivermain::save_doc(const httplib::Request& req, httplib::Response& res)
 { 
+    Logger::getInstance()->log(Logger::Level::INFO,"receivermain::save_doc");
     const auto& files = req.files;
 
     auto it = files.find("file");
@@ -109,13 +118,16 @@ void receivermain::save_doc(const httplib::Request& req, httplib::Response& res)
             out.close();
 
             res.set_content("File uploaded successfully: " + file.filename, "text/plain");
+            Logger::getInstance()->log(Logger::Level::INFO,"File uploaded successfully.");
         } else {
             res.status = 500;
             res.set_content("Failed to save file.", "text/plain");
+            Logger::getInstance()->log(Logger::Level::ERRR,"Failed to save file.");
         }
     } else {
         res.status = 400;
         res.set_content("No file found in the request.", "text/plain");
+        Logger::getInstance()->log(Logger::Level::WARNING,"No file found in the request.");
     }
 	
     /*     
@@ -127,6 +139,7 @@ void receivermain::save_doc(const httplib::Request& req, httplib::Response& res)
 
 void receivermain::load_doc(const httplib::Request& req, httplib::Response& res)
 {
+    Logger::getInstance()->log(Logger::Level::INFO,"receivermain::load_doc");
     std::string str_path = "";
 	
     if (req.has_param("filename")) {
@@ -137,6 +150,7 @@ void receivermain::load_doc(const httplib::Request& req, httplib::Response& res)
     if (!std::filesystem::exists(file_path)) {
         res.status = 404;
         res.set_content("File not found", "text/plain");
+        Logger::getInstance()->log(Logger::Level::WARNING,"File not found.");
         return;
     }
 
@@ -144,6 +158,7 @@ void receivermain::load_doc(const httplib::Request& req, httplib::Response& res)
     if (!file.is_open()) {
         res.status = 500;
         res.set_content("Failed to open file", "text/plain");
+        Logger::getInstance()->log(Logger::Level::ERRR,"Failed to open file.");
         return;
     }
 
