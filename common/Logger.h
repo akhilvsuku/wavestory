@@ -6,6 +6,7 @@
 #include <chrono>
 #include <ctime>
 #include <memory>
+#include <atomic>
 #include "SharedVector.h"
 
 class Logger {
@@ -155,7 +156,7 @@ private:
         struct tm timeInfo;
 
         // Use localtime_s (safe version of localtime)
-        localtime_s(&timeInfo, &time);
+        localtime_r( &time, &timeInfo);
 
         std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &timeInfo);
         return std::string(buffer);
