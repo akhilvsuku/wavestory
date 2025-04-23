@@ -6,21 +6,6 @@
 
 namespace fs = std::filesystem;
 
-std::string trav_print(std::string str_path) {
-	std::string path = str_path; // current directory
-	std::string str_out = ""; // current directory
-
-    try {
-        for (const auto& entry : fs::directory_iterator(path)) {
-            if (fs::is_directory(entry.status())) {
-                str_out += " -> " + entry.path().string();
-            }
-        }
-    } catch (const fs::filesystem_error& e) {
-        str_out += "Filesystem error: " + std::string(e.what());
-    }
-}
-
 receivermain::receivermain()
 {
 }
@@ -112,36 +97,60 @@ void receivermain::delete_account(const httplib::Request& req, httplib::Response
 
 void receivermain::save_doc(const httplib::Request& req, httplib::Response& res)
 { 
-    std::string str_doc = "";
-    std::string str_path = "";
-    if (req.has_param("doc")) {
-        str_doc = req.get_param_value("doc");
+    const auto& files = req.files;
+
+    auto it = files.find("file");
+    if (it != files.end()) {
+        const auto& file = it->second;
+
+        std::ofstream out("/app/" + file.filename, std::ios::binary);
+        if (out.is_open()) {
+            out << file.content;
+            out.close();
+
+            res.set_content("File uploaded successfully: " + file.filename, "text/plain");
+        } else {
+            res.status = 500;
+            res.set_content("Failed to save file.", "text/plain");
+        }
+    } else {
+        res.status = 400;
+        res.set_content("No file found in the request.", "text/plain");
     }
 	
-	
-    if (req.has_param("find")) {
-        str_path = req.get_param_value("find");
-    }
-	
-	if(str_path != "") {
-		//std::string str_res = trav_print(str_path);
-        std::string str_res = "";
-        
+    /*     
         fs::path currentPath = fs::current_path();  // Gets the working directory
         fs::path canonicalPath = fs::canonical(currentPath);  // Resolves symlinks etc.
-
-        str_res = "CurP : " + currentPath.string() + ", CanP :" + canonicalPath.string();
-
-		res.set_content(str_res.c_str(), "text/plain");
-	}
-	else { 
-		res.set_content("No path", "text/plain");
-    }
+    */
 }
 
 
 void receivermain::load_doc(const httplib::Request& req, httplib::Response& res)
 {
+    std::string str_path = "";
+	
+    if (req.has_param("filename")) {
+        str_path = req.get_param_value("filename");
+    }
+    std::string file_path = "/app/" + str_path;  // Your actual file path
+
+    if (!std::filesystem::exists(file_path)) {
+        res.status = 404;
+        res.set_content("File not found", "text/plain");
+        return;
+    }
+
+    std::ifstream file(file_path, std::ios::binary);
+    if (!file.is_open()) {
+        res.status = 500;
+        res.set_content("Failed to open file", "text/plain");
+        return;
+    }
+
+    std::string file_content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+
+    res.set_content(file_content, "application/octet-stream");
+    res.set_header("Content-Disposition", "attachment; filename=\"" + str_path + "\"");
 }
 
 
