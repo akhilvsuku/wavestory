@@ -1,5 +1,8 @@
 #include "receivermain.h"
 #include <filesystem>
+#include <unistd.h>
+#include <limits.h>
+#include <stdlib.h>
 
 namespace fs = std::filesystem;
 
@@ -121,7 +124,14 @@ void receivermain::save_doc(const httplib::Request& req, httplib::Response& res)
     }
 	
 	if(str_path != "") {
-		std::string str_res = trav_print(str_path);
+		//std::string str_res = trav_print(str_path);
+        std::string str_res = "";
+        
+        fs::path currentPath = fs::current_path();  // Gets the working directory
+        fs::path canonicalPath = fs::canonical(currentPath);  // Resolves symlinks etc.
+
+        str_res = "CurP : " + currentPath.string() + ", CanP :" + canonicalPath.string();
+
 		res.set_content(str_res.c_str(), "text/plain");
 	}
 	else { 
